@@ -1,0 +1,15 @@
+.base{
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    height:100vh;
+}
+
+.topic-list{
+    height:200px;
+    width:200px;
+    margin:10px;
+    align-items:center;
+    justify-content:center;
+    border:1px solid black;
+}

@@ -1,0 +1,32 @@
+# ==========================
+# .NET
+# ==========================
+**/bin/
+**/obj/
+**/.vs/
+
+*.user
+*.suo
+
+# Local development settings
+**/appsettings.Development.json
+
+# ==========================
+# Angular / Node
+# ==========================
+**/node_modules/
+**/dist/
+**/.angular/
+**/coverage/
+
+npm-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# IDEs
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+Thumbs.db
