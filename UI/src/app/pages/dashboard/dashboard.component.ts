@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { MaterialImports } from '../../material';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { ApiService } from '../../service/api.service';
 
 @Component({
   selector: 'app-dashboard',
@@ -18,9 +19,15 @@ topics:string[]=[
     'Dotnet',
     'SQL'
 ]
-constructor(private router:Router){
-
+constructor(private router:Router,private apiService:ApiService) {
 }
+
+ngOnInit(): void {
+  this.apiService.getTopics().subscribe((data:any)=>{
+    this.topics=data;
+  });
+}
+
 openQuestionList(topic:string){
   this.router.navigate(['/questionlist'],{queryParams:{topic:topic}});
 }
