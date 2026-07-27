@@ -1,6 +1,7 @@
 import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { environment } from '../../environments/environment';
+import { Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -17,8 +18,8 @@ export class ApiService {
     return this.http.post(`${this.apiUrl}/Topic`, topic);
   }
 
-  getQuestions(){
-    return this.http.get(`${this.apiUrl}/QuestionList`);
+  getQuestions():Observable<any[]>{
+    return this.http.get<any[]>(`${this.apiUrl}/QuestionList`);
   }
 
   postQuestion(question: any){
@@ -30,7 +31,7 @@ export class ApiService {
   }
 
   deleteQuestion(id: number){
-    return this.http.delete(`${this.apiUrl}/QuestionList/${id}`);
+    return this.http.delete(`${this.apiUrl}/QuestionList?id=${id}`);
   }
 
 }

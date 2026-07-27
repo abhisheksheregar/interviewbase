@@ -4,6 +4,8 @@ import { MaterialImports } from '../../material';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { FormComponent } from '../../shared/form/form.component';
+import { filter, map } from 'rxjs';
+import { ApiService } from '../../service/api.service';
 
 @Component({
   selector: 'app-question-list',
@@ -14,25 +16,27 @@ import { FormComponent } from '../../shared/form/form.component';
 })
 export class QuestionListComponent {
 
-  constructor(private route: ActivatedRoute, private dialog: MatDialog) { }
-  questions: any[] = [
-    { id: 1, question: 'What is Angular?', answer: 'Angular is a platform and framework for building single-page client applications using HTML, CSS and TypeScript.', topic: 'Angular' },
-    { id: 2, question: 'What is JavaScript?', answer: 'JavaScript is a programming language that is commonly used in web development.', topic: 'Angular' },
-    { id: 3, question: 'What is Node.js?', answer: 'Node.js is an open-source, cross-platform, back-end JavaScript runtime environment that runs on the V8 engine and executes JavaScript code outside a web browser.', topic: 'Node.js' },
-    { id: 4, question: 'What is Dotnet?', answer: '.NET is a free, cross-platform, open source developer platform for building many different types of applications.', topic: 'Dotnet' },
-    { id: 5, question: 'What is SQL?', answer: 'SQL is a standard language for storing, manipulating and retrieving data in databases.', topic: 'SQL' }
-  ]
+  constructor(private route: ActivatedRoute, private dialog: MatDialog, private apiService: ApiService) { }
+  questions: any[] = []
   topic: string = '';
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
       this.topic = params['topic'];
-      this.questions = this.questions.filter(q => q.topic.toLowerCase() === this.topic.toLowerCase());
+      console.log('Selected topic:', this.topic);
+      this.apiService.getQuestions().pipe(
+        map((questions: any[]) =>
+          questions.filter(q => q.topic_id == this.topic)
+        )
+      )
+        .subscribe((data: any) => {
+          this.questions = data;
+        });
     })
   }
 
 
-  addQuestion(question?: string, answer?: string) {
+  addQuestion() {
     this.dialog.open(FormComponent, {
       width: '70vw',
       data: {
@@ -40,10 +44,14 @@ export class QuestionListComponent {
         isEdit: false,
       }
     }).afterClosed().subscribe(result => {
-      alert(result);
-      if (result) {
-        this.questions.push({ id: this.questions.length + 1, question, answer, topic: this.topic });
-      }
+      this.apiService.getQuestions().pipe(
+        map((questions: any[]) =>
+          questions.filter(q => q.topic_id == this.topic)
+        )
+      )
+        .subscribe((data: any) => {
+          this.questions = data;
+        });
     })
 
   }
@@ -52,20 +60,37 @@ export class QuestionListComponent {
     this.dialog.open(FormComponent, {
       width: '70vw',
       data: {
-        topic: this.topic,
+        topicId: this.topic,
         isEdit: true,
-        question: question,
-        answer: answer
+        questions: question,
+        answers: answer,
+        id:id
       }
     }).afterClosed().subscribe(result => {
       alert(result);
-      if (result) {
-        this.questions.push({ id: this.questions.length + 1, question, answer, topic: this.topic });
-      }
+      this.apiService.getQuestions().pipe(
+        map((questions: any[]) =>
+          questions.filter(q => q.topic_id == this.topic)
+        )
+      )
+        .subscribe((data: any) => {
+          this.questions = data;
+        });
     })
 
   }
 
   deleteQuestion(id: number) {
+    this.apiService.deleteQuestion(id).subscribe((data: any) => {
+      console.log('Question deleted:', data);
+      this.apiService.getQuestions().pipe(
+        map((questions: any[]) =>
+          questions.filter(q => q.topic_id == this.topic)
+        )
+      )
+        .subscribe((data: any) => {
+          this.questions = data;
+        });
+    })
   }
 }

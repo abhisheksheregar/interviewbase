@@ -4,12 +4,12 @@
      <button mat-raised-button (click)="addQuestion()">Add Question</button>
     </div>
 
-<div *ngFor="let question of questions" class="question-card">    
+<div *ngFor="let question of questions;let i=index" class="question-card">    
 <mat-accordion >
   <mat-expansion-panel hideToggle>
     <mat-expansion-panel-header>
-      <mat-panel-title> {{question.question}} </mat-panel-title>
-        <button mat-icon-button (click)="editQuestion(question.id,question.question, question.answer)">
+      <mat-panel-title>{{i+1}}) {{question.questions}} </mat-panel-title>
+        <button mat-icon-button (click)="editQuestion(question.id,question.questions, question.answers)">
         <mat-icon>edit</mat-icon>
       </button>
       <button mat-icon-button (click)="deleteQuestion(question.id)">
@@ -17,7 +17,7 @@
         </mat-icon>
       </button>
     </mat-expansion-panel-header>
-    <p>{{question.answer}}</p>
+    <p>{{question.answers}}</p>
   </mat-expansion-panel>
   </mat-accordion>
 </div>

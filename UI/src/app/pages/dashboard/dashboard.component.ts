@@ -12,13 +12,7 @@ import { ApiService } from '../../service/api.service';
   styleUrl: './dashboard.component.scss'
 })
 export class DashboardComponent {
-topics:string[]=[
-    'Angular',
-    'Javascript',
-    'Node.js',
-    'Dotnet',
-    'SQL'
-]
+topics:any[]=[];
 constructor(private router:Router,private apiService:ApiService) {
 }
 
@@ -29,7 +23,7 @@ ngOnInit(): void {
 }
 
 openQuestionList(topic:string){
-  this.router.navigate(['/questionlist'],{queryParams:{topic:topic}});
+  this.router.navigate(['/questionlist'],{queryParams:{topic}});
 }
 
 }

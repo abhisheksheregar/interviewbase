@@ -1,8 +1,8 @@
 <div>
     <div class="base">
         <div  *ngFor="let topic of topics">
-            <mat-card class="topic-list" appearance="outlined" (click)="openQuestionList(topic)">
-                    <mat-card-title>{{topic}}</mat-card-title>
+            <mat-card class="topic-list" appearance="outlined" (click)="openQuestionList(topic.id)">
+                    <mat-card-title>{{topic.topicName}}</mat-card-title>
                 </mat-card>
     </div>
 </div>
