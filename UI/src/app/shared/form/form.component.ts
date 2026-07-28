@@ -21,41 +21,48 @@ export class FormComponent {
  
   ngOnInit(): void {
     this.questionForm.patchValue({
-      topicId:this.data.topic
+      topicId: Number(this.data?.topic) || null
     });
 
     if(this.data.isEdit){
       this.questionForm.patchValue({
         questions:this.data.questions,
         answers:this.data.answers,
-        topicId:this.data.topicId
+        topicId: Number(this.data?.topicId) || Number(this.data?.topic) || null
       });
     }
   }
 
   submitForm(){
     if(this.questionForm.valid){
+      const formValue = this.questionForm.getRawValue();
+      const payload = {
+        questions: formValue.questions,
+        answers: formValue.answers,
+        topicId: Number(formValue.topicId)
+      };
+
       if(!this.data.isEdit){
-        this.apiService.postQuestion(this.questionForm.getRawValue()).subscribe((data:any)=>{
-          console.log('Question added:', data);
-        })
+        this.apiService.postQuestion(payload).subscribe({
+          next: () => this.dialogRef.close({ success: true }),
+          error: () => this.dialogRef.close({ success: false })
+        });
       }
       else{
         let editData = {
           id: this.data.id,
-          questions: this.questionForm.get('questions')?.value,  
-          answers: this.questionForm.get('answers')?.value,
-          topicId: this.questionForm.get('topicId')?.value
+          questions: formValue.questions,
+          answers: formValue.answers,
+          topicId: Number(formValue.topicId)
         };
-        this.apiService.editQuestion(editData).subscribe((data:any)=>{
-          console.log('Question updated:', data);
+        this.apiService.editQuestion(editData).subscribe({
+          next: () => this.dialogRef.close({ success: true }),
+          error: () => this.dialogRef.close({ success: false })
         });
       }
-
-      this.dialogRef.close(true);
+    }
+    else{
+      this.dialogRef.close({ success: false });
+    }
   }
-  else{
-    this.dialogRef.close(false);
-  }
-}
 }

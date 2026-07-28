@@ -1,10 +1,10 @@
-import { Component, signal } from '@angular/core';
+import { Component } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { MaterialImports } from '../../material';
 import { CommonModule } from '@angular/common';
 import { MatDialog } from '@angular/material/dialog';
 import { FormComponent } from '../../shared/form/form.component';
-import { filter, map } from 'rxjs';
+import { map } from 'rxjs';
 import { ApiService } from '../../service/api.service';
 
 @Component({
@@ -17,80 +17,63 @@ import { ApiService } from '../../service/api.service';
 export class QuestionListComponent {
 
   constructor(private route: ActivatedRoute, private dialog: MatDialog, private apiService: ApiService) { }
-  questions: any[] = []
-  topic: string = '';
+  questions: any[] = [];
+  topicId: number | null = null;
 
   ngOnInit(): void {
     this.route.queryParams.subscribe(params => {
-      this.topic = params['topic'];
-      console.log('Selected topic:', this.topic);
-      this.apiService.getQuestions().pipe(
-        map((questions: any[]) =>
-          questions.filter(q => q.topic_id == this.topic)
-        )
-      )
-        .subscribe((data: any) => {
-          this.questions = data;
-        });
-    })
+      this.topicId = Number(params['topic']);
+      this.refreshQuestions();
+    });
   }
 
+  private refreshQuestions() {
+    if (this.topicId === null || Number.isNaN(this.topicId)) {
+      this.questions = [];
+      return;
+    }
+
+    this.apiService.getQuestions().pipe(
+      map((questions: any[]) => questions.filter(q => Number(q.topic_id) === this.topicId))
+    ).subscribe((data: any) => {
+      this.questions = data;
+    });
+  }
 
   addQuestion() {
     this.dialog.open(FormComponent, {
       width: '70vw',
       data: {
-        topic: this.topic,
+        topic: this.topicId,
         isEdit: false,
       }
-    }).afterClosed().subscribe(result => {
-      this.apiService.getQuestions().pipe(
-        map((questions: any[]) =>
-          questions.filter(q => q.topic_id == this.topic)
-        )
-      )
-        .subscribe((data: any) => {
-          this.questions = data;
-        });
-    })
-
+    }).afterClosed().subscribe((result: any) => {
+      if (result?.success) {
+        this.refreshQuestions();
+      }
+    });
   }
 
   editQuestion(id: number, question: string, answer?: string) {
     this.dialog.open(FormComponent, {
       width: '70vw',
       data: {
-        topicId: this.topic,
+        topicId: this.topicId,
         isEdit: true,
         questions: question,
         answers: answer,
-        id:id
+        id: id
       }
-    }).afterClosed().subscribe(result => {
-      alert(result);
-      this.apiService.getQuestions().pipe(
-        map((questions: any[]) =>
-          questions.filter(q => q.topic_id == this.topic)
-        )
-      )
-        .subscribe((data: any) => {
-          this.questions = data;
-        });
-    })
-
+    }).afterClosed().subscribe((result: any) => {
+      if (result?.success) {
+        this.refreshQuestions();
+      }
+    });
   }
 
   deleteQuestion(id: number) {
-    this.apiService.deleteQuestion(id).subscribe((data: any) => {
-      console.log('Question deleted:', data);
-      this.apiService.getQuestions().pipe(
-        map((questions: any[]) =>
-          questions.filter(q => q.topic_id == this.topic)
-        )
-      )
-        .subscribe((data: any) => {
-          this.questions = data;
-        });
-    })
+    this.apiService.deleteQuestion(id).subscribe(() => {
+      this.refreshQuestions();
+    });
   }
 }
