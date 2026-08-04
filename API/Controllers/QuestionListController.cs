@@ -8,6 +8,7 @@ namespace interviewbase.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
+  [Authorize]
   public class QuestionListController : ControllerBase
   {
     private readonly AppDbContext _dbContext;
@@ -66,9 +67,9 @@ namespace interviewbase.Controllers
       {
         return NotFound();
       }
-       _dbContext.QuestionList.Remove(result);
-      _dbContext.SaveChangesAsync();
-      return true;
+      _dbContext.QuestionList.Remove(result);
+      await _dbContext.SaveChangesAsync();
+      return Ok(true);
     }
 }
 }

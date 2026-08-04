@@ -1,5 +1,9 @@
 using interviewbase;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
+using Microsoft.OpenApi.Models;
+using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,7 +29,20 @@ builder.Services.AddDbContext<AppDbContext>(options => {
   options.EnableSensitiveDataLogging();
   options.LogTo(Console.WriteLine, LogLevel.Information);
 });
-  
+
+builder.Services.AddAuthentication(options =>
+{
+    options.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+    options.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+
+})
+.AddJwtBearer(options =>
+{
+    options.Authority = builder.Configuration["AzureAd:Authority"];
+    options.Audience = builder.Configuration["AzureAd:Audience"];
+    options.SaveToken = true;
+});
+
 var app = builder.Build();
 app.UseCors("AllowAll");
 using(var scope = app.Services.CreateScope())

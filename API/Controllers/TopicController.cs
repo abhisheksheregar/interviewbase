@@ -1,5 +1,6 @@
 using interviewbase.DTO;
 using interviewbase.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -8,6 +9,7 @@ namespace interviewbase.Controllers
 {
   [Route("api/[controller]")]
   [ApiController]
+    [Authorize]
   public class TopicController : ControllerBase
   {
     private readonly AppDbContext _dbContext;
