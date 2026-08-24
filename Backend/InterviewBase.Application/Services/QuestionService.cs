@@ -14,7 +14,7 @@ namespace InterviewBase.Application.Services
     {
         public readonly IQuestionRepository _questionRepository;
         public QuestionService(IQuestionRepository questionRepository) {
-            questionRepository = _questionRepository;
+            _questionRepository = questionRepository;
         }
 
         public async Task<bool> DeleteQuestion(int id)

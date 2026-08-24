@@ -23,7 +23,7 @@ namespace interviewbase.Controllers
     [HttpGet]
     public async Task<ActionResult<List<TopicDTO>>> GetTopics()
     {
-      var list = _topicsService.GetTopics();
+      var list = await _topicsService.GetTopics();
       return Ok(list);
     }
 

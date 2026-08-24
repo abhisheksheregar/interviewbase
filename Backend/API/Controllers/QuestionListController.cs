@@ -25,7 +25,7 @@ namespace interviewbase.Controllers
     [HttpGet]
     public async Task<ActionResult<List<QuestionList>>> GetAllQuestions()
     {
-      var results = _questionService.GetAllQuestions();
+      var results =await _questionService.GetAllQuestions();
       return Ok(results);
     }
 
