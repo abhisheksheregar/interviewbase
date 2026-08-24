@@ -1,13 +1,28 @@
 FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
+
 WORKDIR /src
 
-COPY ["interviewbase.csproj", "./"]
-RUN dotnet restore "interviewbase.csproj"
+# Copy project files first
+COPY ["interviewbase/interviewbase.csproj", "interviewbase/"]
+COPY ["InterviewBase.Infrastructure/InterviewBase.Infrastructure.csproj", "InterviewBase.Infrastructure/"]
+COPY ["InterviewBase.Core/InterviewBase.Core.csproj", "InterviewBase.Core/"]
+COPY ["InterviewBase.Application/InterviewBase.Application.csproj", "InterviewBase.Application/"]
 
+# Restore dependencies
+RUN dotnet restore "interviewbase/interviewbase.csproj"
+
+# Copy all source files
 COPY . .
-RUN dotnet publish "interviewbase.csproj" -c Release -o /app/publish /p:UseAppHost=false
 
+# Publish API project
+RUN dotnet publish "interviewbase/interviewbase.csproj" \
+    -c Release \
+    -o /app/publish \
+    /p:UseAppHost=false
+
+# Runtime image
 FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
+
 WORKDIR /app
 
 COPY --from=build /app/publish .
