@@ -11,8 +11,11 @@ COPY ["InterviewBase.Application/InterviewBase.Application.csproj", "InterviewBa
 # Restore dependencies
 RUN dotnet restore "interviewbase/interviewbase.csproj"
 
-# Copy all source files
-COPY . .
+# Copy source files into the same layout used during restore
+COPY ["API/", "interviewbase/"]
+COPY ["InterviewBase.Infrastructure/", "InterviewBase.Infrastructure/"]
+COPY ["InterviewBase.Core/", "InterviewBase.Core/"]
+COPY ["InterviewBase.Application/", "InterviewBase.Application/"]
 
 # Publish API project
 RUN dotnet publish "interviewbase/interviewbase.csproj" \
