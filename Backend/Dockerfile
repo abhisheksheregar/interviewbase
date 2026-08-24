@@ -28,6 +28,9 @@ FROM mcr.microsoft.com/dotnet/aspnet:9.0 AS final
 
 WORKDIR /app
 
+# Avoid exhausting inotify instances on constrained container hosts
+ENV DOTNET_USE_POLLING_FILE_WATCHER=1
+
 COPY --from=build /app/publish .
 
 EXPOSE 8080
