@@ -1,7 +1,7 @@
-using interviewbase.Models;
+using interviewbase.Core.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace interviewbase
+namespace interviewbase.Infrastructure
 {
   public class AppDbContext:DbContext
   {

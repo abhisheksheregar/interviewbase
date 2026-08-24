@@ -1,4 +1,9 @@
 using interviewbase;
+using interviewbase.Infrastructure;
+using InterviewBase.Application.Interfaces;
+using InterviewBase.Application.Repository;
+using InterviewBase.Application.Services;
+using InterviewBase.Infrastructure.Classes;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
@@ -22,7 +27,33 @@ builder.Services.AddCors(options =>
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.AddSecurityDefinition("Bearer", new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Type = SecuritySchemeType.Http,
+        Scheme = "bearer",
+        BearerFormat = "JWT",
+        In = ParameterLocation.Header,
+        Description = "Enter your JWT token below"
+    });
+
+    options.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        {
+            new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] { }
+        }
+    });
+});
 builder.Services.AddDbContext<AppDbContext>(options => {
   options.UseNpgsql(
   builder.Configuration.GetConnectionString("DbConnectionString"));
@@ -42,6 +73,10 @@ builder.Services.AddAuthentication(options =>
     options.Audience = builder.Configuration["AzureAd:Audience"];
     options.SaveToken = true;
 });
+builder.Services.AddScoped<IQuestionRepository, QuestionRepository>();
+builder.Services.AddScoped<ITopicsRepository, TopicsRepository>();
+builder.Services.AddScoped<IQuestionService, QuestionService>();
+builder.Services.AddScoped<ITopicsService, TopicsService>();
 
 var app = builder.Build();
 app.UseCors("AllowAll");

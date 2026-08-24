@@ -1,5 +1,8 @@
-using interviewbase.DTO;
-using interviewbase.Models;
+
+using interviewbase.Core.DTO;
+using interviewbase.Core.Models;
+using interviewbase.Infrastructure;
+using InterviewBase.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,30 +15,24 @@ namespace interviewbase.Controllers
   [Authorize]
   public class QuestionListController : ControllerBase
   {
-    private readonly AppDbContext _dbContext;
-    public QuestionListController(AppDbContext dbContext)
+
+   private readonly IQuestionService _questionService;
+    public QuestionListController(IQuestionService questionService)
     {
-      _dbContext = dbContext;
+            _questionService = questionService;
     }
 
     [HttpGet]
     public async Task<ActionResult<List<QuestionList>>> GetAllQuestions()
     {
-      var results = await _dbContext.QuestionList.ToListAsync();
+      var results = _questionService.GetAllQuestions();
       return Ok(results);
     }
 
     [HttpPost]
     public async Task<ActionResult<QuestionList>> InsertQuestions([FromBody] QuestionListDTO questionListDto)
     {
-      QuestionList question = new QuestionList()
-      {
-        questions = questionListDto.Questions,
-        answers = questionListDto.Answers,
-        topic_id = questionListDto.TopicId
-      };
-      var inserted = await _dbContext.AddAsync(question);
-      await _dbContext.SaveChangesAsync();
+      var question = await _questionService.InsertQuestions(questionListDto);
       return Ok(question);
     }
 
@@ -47,15 +44,7 @@ namespace interviewbase.Controllers
       {
         return BadRequest();
       }
-      var questionList = new QuestionList()
-      {
-        id = questionListDTO.Id,
-        questions = questionListDTO.Questions,
-        answers = questionListDTO.Answers,
-        topic_id = questionListDTO.TopicId
-      };
-      var updated =  _dbContext.Update(questionList);
-      await _dbContext.SaveChangesAsync();
+      var questionList = await _questionService.UpdateQuestion(questionListDTO);
       return Ok(questionList);
       
     }
@@ -63,14 +52,8 @@ namespace interviewbase.Controllers
     [HttpDelete]
     public async Task<ActionResult<bool>> DeleteQuestion(int id)
     {
-      var result = await _dbContext.QuestionList.FindAsync(id);
-      if(result==null)
-      {
-        return NotFound();
-      }
-      _dbContext.QuestionList.Remove(result);
-      await _dbContext.SaveChangesAsync();
-      return Ok(true);
+     var result=await _questionService.DeleteQuestion(id);
+      return Ok(result);
     }
 }
 }

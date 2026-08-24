@@ -1,5 +1,7 @@
-using interviewbase.DTO;
-using interviewbase.Models;
+using interviewbase.Core.DTO;
+using interviewbase.Core.Models;
+using interviewbase.Infrastructure;
+using InterviewBase.Application.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -12,24 +14,16 @@ namespace interviewbase.Controllers
     [Authorize]
   public class TopicController : ControllerBase
   {
-    private readonly AppDbContext _dbContext;
-    public TopicController(AppDbContext dbContext)
+    private readonly ITopicsService _topicsService;
+    public TopicController(ITopicsService topicsService)
     {
-      _dbContext = dbContext;
+      _topicsService=topicsService; 
     }
+
     [HttpGet]
     public async Task<ActionResult<List<TopicDTO>>> GetTopics()
     {
-      var result = await _dbContext.Topics.ToListAsync();
-      List<TopicDTO> list = new List<TopicDTO>();
-      foreach (var data in result)
-      {
-        list.Add(new TopicDTO()
-        {
-          Id = data.id,
-          TopicName = data.topic_name,
-        });
-      }
+      var list = _topicsService.GetTopics();
       return Ok(list);
     }
 
@@ -37,12 +31,7 @@ namespace interviewbase.Controllers
     [HttpPost]
     public async Task<ActionResult<Topics>> InsertTopic([FromBody] TopicDTO topicDto)
     {
-      var topic = new Topics()
-      {
-        topic_name = topicDto.TopicName,
-      };
-     var result= await _dbContext.AddAsync(topic);
-      await _dbContext.SaveChangesAsync();
+      var topic=_topicsService.InsertTopic(topicDto);
       return Ok(topic);
     }
   }

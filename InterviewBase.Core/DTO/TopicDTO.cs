@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace interviewbase.DTO
+namespace interviewbase.Core.DTO
 {
   public class TopicDTO
   {

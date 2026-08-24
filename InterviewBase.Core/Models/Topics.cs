@@ -1,4 +1,4 @@
-namespace interviewbase.Models
+namespace interviewbase.Core.Models
 {
   public class Topics
   {
