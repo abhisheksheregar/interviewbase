@@ -3,7 +3,7 @@ FROM mcr.microsoft.com/dotnet/sdk:9.0 AS build
 WORKDIR /src
 
 # Copy project files first
-COPY ["interviewbase/interviewbase.csproj", "interviewbase/"]
+COPY ["API/interviewbase/interviewbase.csproj", "interviewbase/"]
 COPY ["InterviewBase.Infrastructure/InterviewBase.Infrastructure.csproj", "InterviewBase.Infrastructure/"]
 COPY ["InterviewBase.Core/InterviewBase.Core.csproj", "InterviewBase.Core/"]
 COPY ["InterviewBase.Application/InterviewBase.Application.csproj", "InterviewBase.Application/"]
